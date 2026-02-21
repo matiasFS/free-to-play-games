@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Animated } from "react-native";
 
 export function GameCard({ game }) {
   return (
-    <View style={styles.card}>
+    <View style={styles.card} key={game.id}>
       <Image source={{ uri: game.image }} style={styles.image} />
       <Text style={styles.title}>{game.title}</Text>
       <Text style={styles.description}>{game.description}</Text>
@@ -26,7 +26,7 @@ export function AnimatedGameCard({ game, index }) {
   }, [opacity, index]);
 
   return (
-    <Animated.View style={[styles.card, { opacity }]}>
+    <Animated.View style={[{ opacity }]}>
       <GameCard game={game} />
     </Animated.View>
   );
