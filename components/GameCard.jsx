@@ -1,15 +1,35 @@
+import { Link } from "expo-router";
 import { useRef, useEffect } from "react";
-import { View, Text, Image, StyleSheet, Animated } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Animated,
+  Pressable,
+} from "react-native";
 
 export function GameCard({ game }) {
   return (
-    <View style={styles.card} key={game.id}>
-      <Image source={{ uri: game.image }} style={styles.image} />
-      <Text style={styles.title}>{game.title}</Text>
-      <Text style={styles.description}>{game.description}</Text>
-      <Text style={styles.genre}>Genre: {game.genre}</Text>
-      <Text style={styles.platform}>Platform: {game.platform}</Text>
-    </View>
+    <Link href={`/${game.id}`} asChild>
+      <Pressable>
+        {({ pressed }) => (
+          <View
+            style={[
+              styles.card,
+              { backgroundColor: pressed ? "#333333" : "#1E1E1E" },
+            ]}
+          >
+            <Image source={{ uri: game.image }} style={styles.image} />
+
+            <Text style={styles.title}>{game.title}</Text>
+            <Text style={styles.description}>{game.description}</Text>
+            <Text style={styles.genre}>Genre: {game.genre}</Text>
+            <Text style={styles.platform}>Platform: {game.platform}</Text>
+          </View>
+        )}
+      </Pressable>
+    </Link>
   );
 }
 
