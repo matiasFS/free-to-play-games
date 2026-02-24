@@ -1,17 +1,29 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-export default function Screen({ children }) {
-  const inset = useSafeAreaInsets();
+
+export function Screen({ children }) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "#000000",
-        padding: 15,
-        paddingTop: inset.top + 20,
-      }}
+    <View
+      style={[
+        styles.container,
+        {
+          // We apply top padding only if we aren't using a transparent header.
+          // For now, let's set a base padding that works for your Main screen.
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        },
+      ]}
     >
       {children}
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#000000",
+  },
+});
