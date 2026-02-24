@@ -60,6 +60,7 @@ export default function AppLayout() {
             headerStyle: { backgroundColor: colors.header },
             headerTintColor: colors.headerText,
             headerTitle: "",
+            contentStyle: { backgroundColor: colors.background },
           }}
         />
       </View>

@@ -11,7 +11,12 @@ export default function AuthLayout() {
         style={isDark ? "light" : "dark"}
         backgroundColor={colors.background}
       />
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      />
     </>
   );
 }
