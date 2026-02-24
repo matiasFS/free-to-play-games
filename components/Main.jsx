@@ -81,11 +81,15 @@ export function Main() {
         </View>
       ) : (
         <FlatList
+          key={colors.background}
           ref={listRef}
           data={filteredGames}
           keyExtractor={(game) => game.id.toString()}
+          style={styles.list}
+          removeClippedSubviews={false}
           // This padding ensures the first card isn't hidden under the transparent header
           contentContainerStyle={styles.listContent}
+          ListHeaderComponentStyle={styles.listHeader}
           ListHeaderComponent={
             <View style={styles.filterBar}>
               <Pressable
@@ -105,6 +109,7 @@ export function Main() {
           renderItem={({ item, index }) => (
             <AnimatedGameCard game={item} index={index} />
           )}
+          ListFooterComponent={<View style={styles.listFooter} />}
         />
       )}
 
