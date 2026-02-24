@@ -1,14 +1,8 @@
-import {
-  FlatList,
-  Text,
-  View,
-  ActivityIndicator,
-  Pressable,
-} from "react-native";
+import { FlatList, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { getLatestGames } from "../lib/freetoplaygames";
 import { AnimatedGameCard } from "./GameCard";
-
+import { Stack } from "expo-router";
 import Screen from "./Screen";
 
 export function Main() {
@@ -22,6 +16,13 @@ export function Main() {
 
   return (
     <Screen>
+      <Stack.Screen
+        options={{
+          headerTransparent: true,
+          headerTitle: "",
+          headerTintColor: "white",
+        }}
+      />
       {games.length === 0 ? (
         <ActivityIndicator size="large" color="#ffffff" />
       ) : (

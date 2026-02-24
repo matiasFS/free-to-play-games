@@ -3,14 +3,12 @@ import {
   Text,
   View,
   Animated,
-  Image,
   ActivityIndicator,
   Pressable,
 } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import Screen from "../components/Screen";
 import { getGameDetails } from "../lib/freetoplaygames";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const IMAGE_HEIGHT = 280;
 
@@ -18,9 +16,8 @@ export default function Detail() {
   const { id } = useLocalSearchParams();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
-  const insets = useSafeAreaInsets();
-  const scrollY = useRef(new Animated.Value(0)).current;
-
+    const scrollY = useRef(new Animated.Value(0)).current;
+    
   useEffect(() => {
     if (id) {
       getGameDetails(id).then((game) => {
@@ -29,6 +26,7 @@ export default function Detail() {
       });
     }
   }, [id]);
+
 
   const imageOpacity = scrollY.interpolate({
     inputRange: [0, IMAGE_HEIGHT * 0.8],
@@ -52,7 +50,7 @@ export default function Detail() {
     <Screen>
       <Stack.Screen
         options={{
-          headerTransparent: false,
+          headerTransparent: true,
           headerTitle: () => (
             <Animated.Text
               style={{
@@ -66,6 +64,8 @@ export default function Detail() {
             </Animated.Text>
           ),
           headerTintColor: "white",
+          
+          
         }}
       />
 
@@ -76,23 +76,21 @@ export default function Detail() {
           style={{ marginTop: 40 }}
         />
       ) : (
-        <View style={{ flex: 1}}>
-          {/* Animated Hero Image */}
+        <View style={{ flex: 1 }}>
+          
           <Animated.Image
-  source={{ uri: game.image }}
-  resizeMode="contain"
-  style={[
-    styles.image,
-    {
-      opacity: imageOpacity,
-      transform: [{ translateY: imageTranslate }],
-    },
-  ]}
-/>
-
-          {/* Scroll Content */}
+            source={{ uri: game.image }}
+            resizeMode="contain" 
+            style={[
+            styles.image,
+            {
+            opacity: imageOpacity,
+            transform: [{ translateY: imageTranslate }],
+            },
+            ]}
+          />
           <Animated.ScrollView
-            contentContainerStyle={{ paddingTop: IMAGE_HEIGHT }}
+            contentContainerStyle={{ paddingTop: IMAGE_HEIGHT  }}
             scrollEventThrottle={16}
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
