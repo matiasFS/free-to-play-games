@@ -2,13 +2,13 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Text, View, Animated, ActivityIndicator, Pressable } from "react-native";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Screen } from "../components/Screen";
-import { getGameDetails } from "../lib/freetoplaygames";
+import { Screen } from "../../components/Screen";
+import { getGameDetails } from "../../lib/freetoplaygames";
 import { createStyles } from "./[id].styles";
-import { MetaItem } from "../components/MetaItem";
-import { useTheme } from "../lib/theme";
+import { MetaItem } from "../../components/MetaItem";
+import { useTheme } from "../../lib/theme";
 
-const IMAGE_HEIGHT = 300; 
+const IMAGE_HEIGHT = 300;
 
 export default function Detail() {
   const { id } = useLocalSearchParams();
@@ -70,11 +70,11 @@ export default function Detail() {
           headerTintColor: colors.headerText,
         }}
       />
-      
+
       <View style={{ flex: 1 }}>
         <Animated.Image
           source={{ uri: game.image }}
-          resizeMode="contain" 
+          resizeMode="contain"
           style={[
             styles.image,
             {
@@ -85,10 +85,10 @@ export default function Detail() {
         />
 
         <Animated.ScrollView
-          contentContainerStyle={{ 
-            paddingTop: IMAGE_HEIGHT + insets.top - 50, 
-            paddingHorizontal: 16, 
-            paddingBottom: 40 
+          contentContainerStyle={{
+            paddingTop: IMAGE_HEIGHT + insets.top - 50,
+            paddingHorizontal: 16,
+            paddingBottom: 40,
           }}
           scrollEventThrottle={16}
           onScroll={Animated.event(
@@ -98,7 +98,7 @@ export default function Detail() {
         >
           <View style={styles.card}>
             <Text style={styles.title}>{game.title}</Text>
-            
+
             <View style={styles.metaRow}>
               <MetaItem label="Genre" value={game.genre} />
               <MetaItem label="Platform" value={game.platform} />
@@ -114,7 +114,7 @@ export default function Detail() {
             </View>
 
             <MetaItem label="Description" value={game.description} />
-            
+
             <Pressable
               onPress={() => router.push("/")}
               android_ripple={{ color: colors.cardPressed }}
@@ -131,4 +131,3 @@ export default function Detail() {
     </Screen>
   );
 }
-

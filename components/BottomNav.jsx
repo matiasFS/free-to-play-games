@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { usePathname, useRouter } from "expo-router";
+import { DeviceEventEmitter, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomeIcon, InfoIcon } from "./Icons";
 import { useTheme } from "../lib/theme";
@@ -10,6 +10,7 @@ export function BottomNav() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <View
@@ -24,7 +25,13 @@ export function BottomNav() {
     >
       <View style={styles.row}>
         <Pressable
-          onPress={() => router.push("/")}
+          onPress={() => {
+            if (pathname === "/") {
+              DeviceEventEmitter.emit("scrollToTop");
+              return;
+            }
+            router.push("/");
+          }}
           android_ripple={{
             color: colors.navPressed,
             borderless: false,
@@ -48,7 +55,10 @@ export function BottomNav() {
           )}
         </Pressable>
         <Pressable
-          onPress={() => router.push("/about")}
+          onPress={() => {
+            if (pathname === "/about") return;
+            router.push("/about");
+          }}
           android_ripple={{
             color: colors.navPressed,
             borderless: false,
