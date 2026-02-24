@@ -52,7 +52,6 @@ export const createStyles = (colors) =>
       fontSize: 15,
     },
     backButton: {
-      backgroundColor: colors.accent,
       padding: 16,
       borderRadius: 12,
       marginTop: 35,
@@ -62,7 +61,6 @@ export const createStyles = (colors) =>
       transform: [{ scale: 0.98 }],
     },
     backText: {
-      color: colors.accentText,
       textAlign: "center",
       fontWeight: "bold",
       fontSize: 16,

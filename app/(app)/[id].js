@@ -1,6 +1,6 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text, View, Animated, ActivityIndicator, Pressable } from "react-native";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Screen } from "../../components/Screen";
 import { getGameDetails } from "../../lib/freetoplaygames";
@@ -16,10 +16,11 @@ export default function Detail() {
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showTitle, setShowTitle] = useState(false);
+  const [themeTick, setThemeTick] = useState(0);
   const scrollY = useRef(new Animated.Value(0)).current;
   const showTitleRef = useRef(false);
   const { colors } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors), [colors, themeTick]);
   const router = useRouter();
 
   useEffect(() => {
@@ -51,6 +52,12 @@ export default function Detail() {
       scrollY.removeListener(listenerId);
     };
   }, [scrollY]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setThemeTick((prev) => prev + 1);
+    }, [])
+  );
 
   if (loading)
     return (
@@ -116,14 +123,16 @@ export default function Detail() {
             <MetaItem label="Description" value={game.description} />
 
             <Pressable
+              key={colors.accent}
               onPress={() => router.push("/")}
               android_ripple={{ color: colors.cardPressed }}
               style={({ pressed }) => [
                 styles.backButton,
+                { backgroundColor: colors.accent },
                 pressed && styles.backButtonPressed,
               ]}
             >
-              <Text style={styles.backText}>Back Home</Text>
+              <Text style={[styles.backText, { color: colors.accentText }]}>Back Home</Text>
             </Pressable>
           </View>
         </Animated.ScrollView>
