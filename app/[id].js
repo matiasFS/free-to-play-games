@@ -1,18 +1,26 @@
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { Text, View, Animated, ActivityIndicator, Pressable, StyleSheet } from "react-native";
-import { useState, useEffect, useRef } from "react";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Text, View, Animated, ActivityIndicator, Pressable } from "react-native";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Screen } from "../components/Screen";
 import { getGameDetails } from "../lib/freetoplaygames";
+import { createStyles } from "./[id].styles";
+import { MetaItem } from "../components/MetaItem";
+import { useTheme } from "../lib/theme";
 
-const IMAGE_HEIGHT = 300; // Increased height to prevent tight cropping
+const IMAGE_HEIGHT = 300; 
 
 export default function Detail() {
   const { id } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showTitle, setShowTitle] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const showTitleRef = useRef(false);
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -29,11 +37,39 @@ export default function Detail() {
     extrapolate: "clamp",
   });
 
-  if (loading) return <Screen><ActivityIndicator size="large" color="#fff" style={{flex:1}}/></Screen>;
+  useEffect(() => {
+    const threshold = IMAGE_HEIGHT * 0.6;
+    const listenerId = scrollY.addListener(({ value }) => {
+      const nextShowTitle = value > threshold;
+      if (showTitleRef.current !== nextShowTitle) {
+        showTitleRef.current = nextShowTitle;
+        setShowTitle(nextShowTitle);
+      }
+    });
+
+    return () => {
+      scrollY.removeListener(listenerId);
+    };
+  }, [scrollY]);
+
+  if (loading)
+    return (
+      <Screen>
+        <ActivityIndicator size="large" color={colors.accent} style={{ flex: 1 }} />
+      </Screen>
+    );
 
   return (
     <Screen>
-      <Stack.Screen options={{ headerTransparent: true, headerTitle: "", headerTintColor: "white" }} />
+      <Stack.Screen
+        options={{
+          headerTransparent: true,
+          headerTitle: showTitle && game ? game.title : "",
+          headerTitleStyle: { color: colors.headerText },
+          headerLeft: showTitle ? () => null : undefined,
+          headerTintColor: colors.headerText,
+        }}
+      />
       
       <View style={{ flex: 1 }}>
         <Animated.Image
@@ -49,7 +85,6 @@ export default function Detail() {
         />
 
         <Animated.ScrollView
-          // Floating effect: paddingHorizontal creates the side margins
           contentContainerStyle={{ 
             paddingTop: IMAGE_HEIGHT + insets.top - 50, 
             paddingHorizontal: 16, 
@@ -64,46 +99,32 @@ export default function Detail() {
           <View style={styles.card}>
             <Text style={styles.title}>{game.title}</Text>
             
-            {/* ROW 1: Genre & Platform */}
             <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Text style={styles.label}>Genre</Text>
-                <Text style={styles.value}>{game.genre}</Text>
-              </View>
-              <View style={styles.metaItem}>
-                <Text style={styles.label}>Platform</Text>
-                <Text style={styles.value}>{game.platform}</Text>
-              </View>
+              <MetaItem label="Genre" value={game.genre} />
+              <MetaItem label="Platform" value={game.platform} />
             </View>
 
-            {/* ROW 2: Publisher & Developer */}
             <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Text style={styles.label}>Publisher</Text>
-                <Text style={styles.value}>{game.publisher}</Text>
-              </View>
-              <View style={styles.metaItem}>
-                <Text style={styles.label}>Developer</Text>
-                <Text style={styles.value}>{game.developer}</Text>
-              </View>
+              <MetaItem label="Publisher" value={game.publisher} />
+              <MetaItem label="Developer" value={game.developer} />
             </View>
 
-            {/* ROW 3: Release Date */}
             <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Text style={styles.label}>Release Date</Text>
-                <Text style={styles.value}>{game.releaseDate}</Text>
-              </View>
+              <MetaItem label="Release Date" value={game.releaseDate} />
             </View>
 
-            <Text style={[styles.label, { marginTop: 10 }]}>Description</Text>
-            <Text style={styles.description}>{game.description}</Text>
-
-            <Link href="/" asChild>
-              <Pressable style={styles.backButton}>
-                <Text style={styles.backText}>Back Home</Text>
-              </Pressable>
-            </Link>
+            <MetaItem label="Description" value={game.description} />
+            
+            <Pressable
+              onPress={() => router.push("/")}
+              android_ripple={{ color: colors.cardPressed }}
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.backButtonPressed,
+              ]}
+            >
+              <Text style={styles.backText}>Back Home</Text>
+            </Pressable>
           </View>
         </Animated.ScrollView>
       </View>
@@ -111,67 +132,3 @@ export default function Detail() {
   );
 }
 
-const styles = StyleSheet.create({
-  image: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    width: "100%",
-  },
-  card: {
-    backgroundColor: "#111111",
-    padding: 24,
-    borderRadius: 24,
-    // Add border to make the floating card stand out more on black background
-    borderWidth: 1,
-    borderColor: "#222",
-  },
-  title: { 
-    fontSize: 28, 
-    fontWeight: "bold", 
-    color: "#fff", 
-    marginBottom: 24 
-  },
-  metaRow: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginBottom: 20,
-    gap: 12
-  },
-  metaItem: { 
-    flex: 1,
-    backgroundColor: "#1A1A1A",
-    padding: 12,
-    borderRadius: 12
-  },
-  label: { 
-    color: "#777", 
-    fontSize: 10, 
-    textTransform: "uppercase", 
-    letterSpacing: 1,
-    marginBottom: 4 
-  },
-  value: { 
-    color: "#fff", 
-    fontSize: 14, 
-    fontWeight: "600" 
-  },
-  description: { 
-    color: "#CCC", 
-    lineHeight: 24, 
-    fontSize: 15 
-  },
-  backButton: { 
-    backgroundColor: "#391a68", 
-    padding: 16, 
-    borderRadius: 12, 
-    marginTop: 35 
-  },
-  backText: { 
-    color: "#fff", 
-    textAlign: "center", 
-    fontWeight: "bold", 
-    fontSize: 16 
-  }
-});

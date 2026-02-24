@@ -1,12 +1,14 @@
-import { FlatList, ActivityIndicator, View, StyleSheet } from "react-native";
+import { FlatList, ActivityIndicator, View } from "react-native";
 import { useEffect, useState } from "react";
 import { getLatestGames } from "../lib/freetoplaygames";
 import { AnimatedGameCard } from "./GameCard";
 import { Stack } from "expo-router";
 import { Screen } from "./Screen"; // Use Named Import
-
+import { styles } from "./Main.styles";
+import { useTheme } from "../lib/theme";
 export function Main() {
   const [games, setGames] = useState([]);
+  const { colors } = useTheme();
 
   useEffect(() => {
     getLatestGames().then(setGames);
@@ -18,12 +20,12 @@ export function Main() {
         options={{
           headerTransparent: true,
           headerTitle: "Latest Games", // Added a title
-          headerTintColor: "white",
+          headerTintColor: colors.headerText,
         }}
       />
       {games.length === 0 ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#ffffff" />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       ) : (
         <FlatList
@@ -39,8 +41,3 @@ export function Main() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  loader: { flex: 1, justifyContent: "center", alignItems: "center" },
-  listContent: { paddingHorizontal: 16, paddingTop: 60, paddingBottom: 20 },
-});

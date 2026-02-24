@@ -1,15 +1,14 @@
 import { Link } from "expo-router";
-import { useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Animated,
-  Pressable,
-} from "react-native";
+import { useRef, useEffect, useMemo } from "react";
+import { View, Text, Image, Animated, Pressable } from "react-native";
+
+import { createStyles } from "./GameCard.styles";
+import { useTheme } from "../lib/theme";
 
 export function GameCard({ game }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Link href={`/${game.id}`} asChild>
       <Pressable>
@@ -17,15 +16,18 @@ export function GameCard({ game }) {
           <View
             style={[
               styles.card,
-              { backgroundColor: pressed ? "#333333" : "#1E1E1E" },
+              pressed ? styles.cardPressed : styles.cardDefault,
             ]}
           >
             <Image source={{ uri: game.image }} style={styles.image} />
 
             <Text style={styles.title}>{game.title}</Text>
-            <Text style={styles.description}>{game.description}</Text>
-            <Text style={styles.genre}>Genre: {game.genre}</Text>
-            <Text style={styles.platform}>Platform: {game.platform}</Text>
+            <Text style={styles.description} numberOfLines={2}>
+              {game.description}
+            </Text>
+
+            <Text style={styles.meta}>Genre: {game.genre}</Text>
+            <Text style={styles.meta}>Platform: {game.platform}</Text>
           </View>
         )}
       </Pressable>
@@ -39,50 +41,15 @@ export function AnimatedGameCard({ game, index }) {
   useEffect(() => {
     Animated.timing(opacity, {
       toValue: 1,
-      duration: 500,
-      delay: index * 300,
+      duration: 400,
+      delay: index * 120,
       useNativeDriver: true,
     }).start();
-  }, [opacity, index]);
+  }, [index]);
 
   return (
-    <Animated.View style={[{ opacity }]}>
+    <Animated.View style={{ opacity }}>
       <GameCard game={game} />
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#1E1E1E",
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-
-  image: {
-    width: 320,
-    height: 200,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginTop: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#FFFFFF",
-  },
-  genre: {
-    fontSize: 14,
-    fontStyle: "italic",
-    color: "#FFFFFF",
-  },
-  platform: {
-    fontSize: 14,
-    fontStyle: "italic",
-    color: "#FFFFFF",
-  },
-});
