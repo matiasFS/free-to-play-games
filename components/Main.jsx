@@ -6,6 +6,7 @@ import {
   Pressable,
   Modal,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { DeviceEventEmitter } from "react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +22,7 @@ export function Main() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -46,10 +48,24 @@ export function Main() {
   }, [games]);
 
   const filteredGames = useMemo(() => {
-    if (selectedGenres.length === 0) return games;
-    const selected = new Set(selectedGenres);
-    return games.filter((game) => selected.has(game.genre));
-  }, [games, selectedGenres]);
+    let result = games;
+
+    // Filter by genres
+    if (selectedGenres.length > 0) {
+      const selected = new Set(selectedGenres);
+      result = result.filter((game) => selected.has(game.genre));
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((game) =>
+        game.title.toLowerCase().includes(query),
+      );
+    }
+
+    return result;
+  }, [games, selectedGenres, searchQuery]);
 
   const toggleGenre = (genre) => {
     setSelectedGenres((prev) => {
@@ -81,7 +97,6 @@ export function Main() {
         </View>
       ) : (
         <FlatList
-          key={colors.background}
           ref={listRef}
           data={filteredGames}
           keyExtractor={(game) => game.id.toString()}
@@ -91,7 +106,14 @@ export function Main() {
           contentContainerStyle={styles.listContent}
           ListHeaderComponentStyle={styles.listHeader}
           ListHeaderComponent={
-            <View style={styles.filterBar}>
+            <View key={colors.background} style={styles.filterBar}>
+              <TextInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search by title..."
+                placeholderTextColor={colors.textSubtle}
+                style={styles.searchInput}
+              />
               <Pressable
                 onPress={() => setFilterOpen(true)}
                 android_ripple={{ color: colors.cardPressed }}
@@ -103,7 +125,7 @@ export function Main() {
                 <Text style={styles.filterButtonText}>Genre</Text>
                 <Text style={styles.filterButtonText}>{filterLabel}</Text>
               </Pressable>
-              <Text style={styles.filterHint}>Tap to filter by genre</Text>
+              <Text style={styles.filterHint}>Search or filter by genre</Text>
             </View>
           }
           renderItem={({ item, index }) => (

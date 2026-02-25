@@ -39,6 +39,17 @@ export const createStyles = (colors) =>
       fontSize: 14,
       fontWeight: "600",
     },
+    searchInput: {
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderWidth: 1,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      marginBottom: 10,
+      color: colors.text,
+      fontSize: 14,
+    },
     filterHint: {
       color: colors.textSubtle,
       fontSize: 12,
